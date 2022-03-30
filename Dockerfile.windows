@@ -1,0 +1,30 @@
+ARG BASE_IMAGE
+FROM --platform=$BUILDPLATFORM golang:1.15 as builder
+
+RUN mkdir -p /go/src/github.com/mauriciopoppe/kubernetes-playground/
+WORKDIR /go/src/github.com/mauriciopoppe/kubernetes-playground/
+ADD go.mod .
+ADD go.sum .
+
+RUN go mod download
+ADD . .
+
+ARG APP
+ARG TAG
+RUN make build-windows
+
+FROM ${BASE_IMAGE}
+USER ContainerAdministrator
+
+WORKDIR /go/src/github.com/mauriciopoppe/kubernetes-playground/
+ADD . .
+COPY --from=builder /go/src/github.com/mauriciopoppe/kubernetes-playground/bin/app.exe bin/app.exe
+
+# Define GOTRACEBACK to mark this container as using the Go language runtime
+# for `skaffold debug` (https://skaffold.dev/docs/workflows/debug/).
+ENV GOTRACEBACK=all
+
+ENTRYPOINT ["/go/src/github.com/mauriciopoppe/kubernetes-playground/bin/app.exe"]
+
+# vim: set ft=dockerfile
+

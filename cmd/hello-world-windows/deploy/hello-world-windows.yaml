@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hello-world-windows
+  namespace: sandbox
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: hello-world-windows-role
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["*"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: hello-world-windows-role-binding
+subjects:
+  - kind: ServiceAccount
+    name: hello-world-windows
+    namespace: sandbox
+roleRef:
+  kind: ClusterRole
+  name: hello-world-windows-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-world-windows
+  namespace: sandbox
+spec:
+  serviceAccount: hello-world-windows
+  nodeSelector:
+    kubernetes.io/os: windows
+  containers:
+  - name: hello-world-windows
+    image: hello-world-windows
+

@@ -1,0 +1,11 @@
+apiVersion: skaffold/v2beta15
+kind: Config
+build:
+  artifacts:
+  - image: hello-world-linux
+    custom:
+      buildCommand: APP=hello-world-linux make build-and-push-debug
+deploy:
+  kubectl:
+    manifests:
+      - cmd/hello-world-linux/deploy/hello-world-linux.yaml
