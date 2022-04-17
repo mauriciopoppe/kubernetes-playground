@@ -1,42 +1,6 @@
-# Kubernetes Contributor Notes
+# kubernetes utils
 
-Notes that I learned from contributing to kubernetes
-
-## Running experiments with skaffold
-
-See ./sandbox-with-debugger.md
-
-## Libraries that I should be aware of
-
-- `apimachinery`
-  - `wait` https://pkg.go.dev/k8s.io/apimachinery/pkg/util/wait
-
-## Fragments
-
-### Kubernetes E2E tests
-
-**Running a test in a user defined namespace**
-
-- Create the namespace e.g. `mauricio-stress`
-- Set `f.SkipNamespaceCreation = true` and on init assign the namepace to `f.Namespace`
-
-```golang
-f := framework.NewFrameworkWithCustomTimeouts("volume", storageframework.GetDriverTimeouts(driver))
-f.SkipNamespaceCreation = true
-
-init := func() {
-  l = local{}
-
-  ns, err := f.ClientSet.CoreV1().Namespaces().Get(context.TODO(), "mauricio-stress", metav1.GetOptions{})
-  if err != nil {
-          panic(err)
-  }
-  f.Namespace = ns
-```
-
-### Timers & Wait
-
----
+## Timers & Wait
 
 Exponential backoff (source https://github.com/kubernetes-csi/external-snapshotter/pull/504/files)
 
@@ -95,5 +59,3 @@ for {
     }
 }
 ```
-
----

@@ -10,6 +10,7 @@ https://cs.github.com/kubernetes/kubernetes/blob/afb0136d6235201a89a426f071b8957
 func NewAdmissionOptions() *AdmissionOptions {
 	options := genericoptions.NewAdmissionOptions()
 	// register all admission plugins
+	// including the DefaultStorageClass admission plugin
 	RegisterAllAdmissionPlugins(options.Plugins)
 	// set RecommendedPluginOrder
 	options.RecommendedPluginOrder = AllOrderedPlugins
@@ -30,6 +31,7 @@ import (
 )
 func RegisterAllAdmissionPlugins(plugins *admission.Plugins) {
     // ...
+    // NOTE: setdefault is the name of the import for the DefaultStorageClass plugin
 	setdefault.Register(plugins)
     // ...
 }
@@ -47,7 +49,5 @@ func Register(plugins *admission.Plugins) {
 }
 ```
 
-With the above it looks like it's registered into all admissions plugins,
-next I read how it's used.
-
+With the above it looks like it's registered into all admissions plugins, next I read how it's used.
 

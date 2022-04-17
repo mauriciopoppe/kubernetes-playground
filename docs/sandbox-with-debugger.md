@@ -61,6 +61,6 @@ Breakpoint 1 set at 0x118b754 for main.main() ./cmd/hello-world-linux/main.go:46
 
 Projects:
 
-- `cmd/hello-world-linux` - Accessing the API server from a pod (see the rbac rules too)
-- `cmd/hello-world-windows` - Works only in windows nodes, same as hello-world but with a windows binary
+- `cmd/hello-world-linux` - Accessing the API server from a pod.
+- `cmd/hello-world-windows` - Works only in windows nodes, same as hello-world-linux but with a windows binary.
 
