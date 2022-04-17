@@ -9,5 +9,5 @@ kind create cluster --config=./config.yaml
 ## Deleting the cluster
 
 ```
-kind delete cluster --config=./config.yaml
+kind delete cluster
 ```
