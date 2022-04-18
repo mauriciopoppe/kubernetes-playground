@@ -34,8 +34,11 @@ kubectl create namespace sandbox
 skaffold debug -f cmd/hello-world-linux/skaffold.yaml
 ```
 
-- and delve in the other
+### Connecting to the process with the terminal
+
 ```
+dlv connect localhost:56268
+
 (dlv) b main.go:46
 Breakpoint 1 set at 0x118b754 for main.main() ./cmd/hello-world-linux/main.go:46
 (dlv) c
@@ -59,7 +62,105 @@ Breakpoint 1 set at 0x118b754 for main.main() ./cmd/hello-world-linux/main.go:46
 ...
 ```
 
-Projects:
+### Connecting to the process with nvim
+
+The setup requires a few plugins:
+
+- https://github.com/mfussenegger/nvim-dap
+- https://github.com/rcarriga/nvim-dap-ui (I also use this as the UI)
+
+The setup for nvim-dap that I have is this one, it's a little bit different
+to the one in https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#go-using-delve-directly
+and adapted to connect to a remote process if request = "attach"
+
+```
+local dap = require "dap"
+dap.adapters.go = function(callback, config)
+  local stdout = vim.loop.new_pipe(false)
+  local handle
+  local pid_or_err
+  local port = config["port"] or 38697
+  local opts = {
+    stdio = {nil, stdout},
+    args = {"dap", "-l", "127.0.0.1:" .. port},
+    detached = true
+  }
+  if config["request"] == "launch" then
+    -- opts["args"] = {"connect", "--allow-non-terminal-interactive", "127.0.0.1:" .. config["port"]}
+    -- print(vim.inspect(opts))
+    handle, pid_or_err = vim.loop.spawn("dlv", opts, function(code)
+      stdout:close()
+      handle:close()
+      if code ~= 0 then
+        print('dlv exited with code', code)
+      end
+    end)
+    assert(handle, 'Error running dlv: ' .. tostring(pid_or_err))
+    stdout:read_start(function(err, chunk)
+      assert(not err, err)
+      if chunk then
+        vim.schedule(function()
+          require('dap.repl').append(chunk)
+        end)
+      end
+    end)
+    -- Wait for delve to start
+    vim.defer_fn(
+      function()
+        callback({type = "server", host = "127.0.0.1", port = port})
+      end,
+    100)
+  else
+    -- server is already up in remote mode (still needs to be deferred to avoid errors :()
+    vim.defer_fn(
+      function()
+        callback({type = "server", host = "127.0.0.1", port = port})
+      end,
+    100)
+  end
+end
+
+dap.configurations.go = {
+  -- debug remote process
+  {
+    type = "go",
+    name = "Debug remote",
+    debugAdapter = "dlv-dap",
+    request = "attach",
+    mode = "remote",
+    host = "127.0.0.1",
+    port = "56268",
+    stopOnEntry = false,
+    substitutePath = {
+      {
+          from = "${workspaceFolder}",
+          to = "/go/src/github.com/mauriciopoppe/kubernetes-playground",
+      },
+    },
+  },
+}
+```
+
+With the UI I have this mapping:
+
+```
+function _G.dap_preview_scopes()
+  opts = {
+    width = 200,
+    height = 15,
+    enter = true,
+  }
+  dapui.float_element("scopes", opts)
+end
+
+-- preview window under cursor
+vim.api.nvim_set_keymap('n', '<Leader>bp', ':lua dap_preview_scopes()<CR>', { noremap = true, silent = true })
+```
+
+After setting breakpoints with `:lua dap_toggle_breakpoint()<CR>` and start the process with
+`:lua dap_continue()<CR>`, then open the UI with `<Leader>bp`
+
+## Demos
 
 - `cmd/hello-world-linux` - Accessing the API server from a pod.
 - `cmd/hello-world-windows` - Works only in windows nodes, same as hello-world-linux but with a windows binary.

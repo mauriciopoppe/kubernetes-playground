@@ -46,7 +46,7 @@ func main() {
 		klog.Infof("Hello world from linux! My name is Mauricio")
 		klog.Infof("ns1=%+v err=%+v\n", ns1, err)
 
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 1)
 	}
 }
 
