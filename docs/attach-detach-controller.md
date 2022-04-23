@@ -38,7 +38,7 @@ In addition there's an indexer by pvc in the pod informer, the comment explains 
 // to iterate all pods every time to find pods whichereference given PVC.
 ```
 
-## Run `func (adc *attachDetachController) Run`
+## `func (adc *attachDetachController) Run`
 
 Wait for all the informers to sync, populate the actual state of the world, and the desired
 state of the world, start the reconciler in a goroutine, the desired state of the world populator
@@ -118,6 +118,49 @@ only its `devicePath` property is updated because it's already marked as attache
 
 ## Reconciler `func (rc *reconciler) Run`
 
-It follows the common pattern for reconcilers `wait.Until(fn, 100ms, stop)`, fn is `func (rc *reconciler) reconcile()`.
+It follows the common pattern for reconcilers `wait.Until(fn, 100ms, stop)`, fn is `func (rc *reconciler) reconcile()`, the code simplifies to:
 
-`reconcile`
+```go
+func (rc *reconciler) reconcile() {
+  detachASWAttachedVolumes()
+  attachDSWVolumesToAttach()
+}
+```
+
+`reconcile` handles detaches first, there are many interesting cases including
+https://github.com/kubernetes/kubernetes/issues/93902, the code simplifies to:
+
+```go
+for _, attachedVolume := range ASW.GetAttachedVolumes() {
+  if !DSW.VolumeExists(attachedVolume) {
+    // lots of checks to make sure that the detach is safe
+    // ...
+    err := reconciler.attacherDetacher.DetachVolume(attachedVolume)
+    if err != nil {
+      // so that NodeStatusUpdater will add it back to the VolumeAttached list
+      ASW.AddVolumeToReportAsAttached(attachedVolume)
+    }
+  }
+}
+```
+
+`reconcile` handles attach next, the code simplifies to:
+
+```go
+for _, volumeToAttach := range DSW.GetVolumesToAttach() {
+  // lots of checks to make sure that the attach is safe
+  // ...
+  err := reconciler.attacherDetacher.AttachVolume(volumeToAttach)
+}
+```
+
+## DSWP `func (dswp *desiredStateOfWorldPopulator) Run`
+
+The DSWP removes/adds the volumes found in pods to the DSW.
+
+For the removal, it iterates over the pods added to the DSW and checks if the pod
+is still available in the API server through the informer, if it's not in the informer
+then it's deleted from the DSW.
+
+For the addition, it lists all the pods in the informer and if it's not terminated
+it iterates over all the `pod.Spec.Volumes` and adds the `<pod, volume>` to the DSW
