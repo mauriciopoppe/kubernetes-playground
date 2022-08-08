@@ -1,4 +1,4 @@
-# kubernetes utils
+# Kubernetes Utils
 
 ## Timers & Wait
 
@@ -15,19 +15,6 @@ backoff := wait.Backoff{
 ```
 
 `wait.ExponentialBackoff(backoff, condition)` will execute `condition` at these times until we reach `Steps` which is when it returns a timeout error, a calculator that's useful is https://exponentialbackoffcalculator.com/
-
-|Run|Seconds|
-|---|---|
-|0|0.000|
-|1|0.100|
-|2|0.250|
-|3|0.475|
-|4|0.813|
-|5|1.319|
-|6|2.078|
-|7|3.217|
-|8|4.926|
-|9|7.489|
 
 There's also `ExponentialBackoffWithJitter`
 
