@@ -18,25 +18,28 @@ I used this in:
 With skaffold and delve
 
 - add this line to ~/.config/dlv/config.yml (or ~/.dlv/config.yml in macOS)
-```
+
+```yaml
 substitute-path:
   # - {from: path, to: path}
   - {from: /go/src/github.com/mauriciopoppe/kubernetes-playground, to: ./}
 ```
 
 - create the namespace for the app
-```
+
+```bash
 kubectl create namespace sandbox
 ```
 
 - run skaffold in one terminal
-```
+
+```bash
 skaffold debug -f cmd/hello-world-linux/skaffold.yaml
 ```
 
 ### Connecting to the process with the terminal
 
-```
+```bash
 dlv connect localhost:56268
 
 (dlv) b main.go:46
@@ -73,7 +76,7 @@ The setup for nvim-dap that I have is this one, it's a little bit different
 to the one in https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#go-using-delve-directly
 and adapted to connect to a remote process if request = "attach"
 
-```
+```lua
 local dap = require "dap"
 dap.adapters.go = function(callback, config)
   local stdout = vim.loop.new_pipe(false)
@@ -143,7 +146,7 @@ dap.configurations.go = {
 
 With the UI I have this mapping:
 
-```
+```lua
 function _G.dap_preview_scopes()
   opts = {
     width = 200,

@@ -35,14 +35,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	kubeClient, err := kubernetes.NewForConfig(config)
+	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		klog.Error(err.Error())
 		os.Exit(1)
 	}
 
 	for {
-		ns1, err := kubeClient.CoreV1().Namespaces().Get(context.TODO(), "kube-system", metav1.GetOptions{})
+		ns1, err := client.CoreV1().Namespaces().Get(context.TODO(), "kube-system", metav1.GetOptions{})
 		klog.Infof("Hello world from linux! My name is Mauricio")
 		klog.Infof("ns1=%+v err=%+v\n", ns1, err)
 

@@ -2,10 +2,14 @@
 
 ## Summary
 
-The Attach/Detach controller implements a controller to manage volume attach and detach operations.
+The Attach/Detach controller manages volume attach and detach operations.
 
 NOTE: this analysis assumes that CSIMigration is turned on, therefore the paths that use the intree
 plugins are not part of this analysis (like the intreeToCSITranslator).
+
+The attach/detach controller is initialized in the kube-controller-manager (kcm), the kcm initializes
+many builtin controllers in [NewControllerInitializers](https://github.com/kubernetes/kubernetes/blob/132f29769dfecfc808adc58f756be43171054094/cmd/kube-controller-manager/app/controllermanager.go#L450), the function [`startAttachDetachController`](https://github.com/kubernetes/kubernetes/blob/132f29769dfecfc808adc58f756be43171054094/cmd/kube-controller-manager/app/core.go#L299)
+is the starting point.
 
 ## Setup `func NewAttachDetachController(`
 
@@ -33,7 +37,7 @@ During the setup we add event handlers for the informers
 
 In addition there's an indexer by pvc in the pod informer, the comment explains it:
 
-```
+```go
 // This custom indexer will index pods by its PVC keys. Then we don't need
 // to iterate all pods every time to find pods whichereference given PVC.
 ```
@@ -54,7 +58,7 @@ The last step of the ASW population is to process the VolumeAttachments (VA), a 
 is the intent to attach a volume, the comment in the `processVolumeAttachment` function
 explains it well:
 
-```
+```go
 // For each VA object, this function checks if its present in the ASW.
 // If not, adds the volume to ASW as an "uncertain" attachment.
 // In the reconciler, the logic checks if the volume is present in the DSW;
@@ -71,7 +75,7 @@ If `addToVolume` is true then we add the pod to the list of pods that reference 
 (if it wasn't already added before), the volume to attach is added to the DSW as follows, read
 `func (dsw *desiredStateOfWorld) AddPod`
 
-```
+```go
 // add volume to the DSW
 volumeObj, volumeExists := nodeObj.volumesToAttach[volumeName]
 if !volumeExists {
@@ -96,7 +100,7 @@ if _, podExists := volumeObj.scheduledPods[podName]; !podExists {
 If `addToVolume` is false then we remove it with the DSW with the reverse operation of above,
 read `func (dsw *desiredStateOfWorld) DeletePod`
 
-```
+```go
 // remove the pod from the list of scheduled pods for the volume
 delete(
   dsw.nodesManaged[nodeName].volumesToAttach[volumeName].scheduledPods,
