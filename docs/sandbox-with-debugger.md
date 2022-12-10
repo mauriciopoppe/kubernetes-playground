@@ -22,7 +22,7 @@ With skaffold and delve
 ```yaml
 substitute-path:
   # - {from: path, to: path}
-  - {from: /go/src/github.com/mauriciopoppe/kubernetes-playground, to: ./}
+  - { from: /go/src/github.com/mauriciopoppe/kubernetes-playground, to: ./ }
 ```
 
 - create the namespace for the app
@@ -65,12 +65,11 @@ Breakpoint 1 set at 0x118b754 for main.main() ./cmd/hello-world-linux/main.go:46
 ...
 ```
 
-### Connecting to the process with nvim
+### Connecting to the process with nvim and nvim-dap
 
-The setup requires a few plugins:
+The setup requires this plugin:
 
 - https://github.com/mfussenegger/nvim-dap
-- https://github.com/rcarriga/nvim-dap-ui (I also use this as the UI)
 
 The setup for nvim-dap that I have is this one, it's a little bit different
 to the one in https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#go-using-delve-directly
@@ -144,7 +143,33 @@ dap.configurations.go = {
 }
 ```
 
-With the UI I have this mapping:
+Assuming that the `cmd/<demo>` application is running you can already connect
+to it, first let's set some breakpoints, in Neovim go to the source code of the program
+chosen and set as many breakpoints as wanted with:
+
+```
+:lua require("dap").toggle_breakpoint()<CR>
+```
+
+Next run the application with delve in attach mode (the configuration above),
+it'll ask you which configuration to run:
+
+```
+:lua require("dap").continue()<CR>
+```
+
+If everything went right you should see an arrow on the left of the number
+line showing that the application paused at that point.
+
+![breakpoint](https://user-images.githubusercontent.com/1616682/206831029-ffb50475-331b-422d-9815-da33174332dd.png)
+
+### Debugging with nvim-dap-ui
+
+This step requires this plugin:
+
+- https://github.com/rcarriga/nvim-dap-ui
+
+Configure it as follows:
 
 ```lua
 function _G.dap_preview_scopes()
@@ -160,11 +185,13 @@ end
 vim.api.nvim_set_keymap('n', '<Leader>bp', ':lua dap_preview_scopes()<CR>', { noremap = true, silent = true })
 ```
 
-After setting breakpoints with `:lua dap_toggle_breakpoint()<CR>` and start the process with
-`:lua dap_continue()<CR>`, then open the UI with `<Leader>bp`
+Continuing on the steps above and assuming that your application hit a breakpoint
+you can simply open a floating element for the debugger with `<Leader>bp` or your
+favorite mapping.
+
+![debugging with float](https://user-images.githubusercontent.com/1616682/206831092-c514ff76-76ee-4b78-aa77-1863dc9a5b7f.png)
 
 ## Demos
 
 - `cmd/hello-world-linux` - Accessing the API server from a pod.
 - `cmd/hello-world-windows` - Works only in windows nodes, same as hello-world-linux but with a windows binary.
-
