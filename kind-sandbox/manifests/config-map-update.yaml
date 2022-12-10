@@ -1,5 +1,5 @@
-# Experiment: deploy the manifest and update the config map contents
-# Expected outcome: after some time the config map contents should
+# Experiment: deploy the manifest and update the ConfigMap contents
+# Expected outcome: after some time the ConfigMap contents should
 # be projected, for more info see: https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#mounted-configmaps-are-updated-automatically
 apiVersion: v1
 kind: ConfigMap

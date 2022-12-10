@@ -3,9 +3,10 @@
 # I created this pod to verify a few things:
 #
 # - Through a combination of controllers (admission, SA watcher, SA default on a namespace controller)
-# the pod is modified so that it has additional volumeMounts, through the projected API
-# 3 things are mounted into /var/run/secrets/kubernetes.io/serviceaccount, which are described in detail here:
-# https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#bound-service-account-token-volume
+#   the Pod is modified before it's stored in etcd so that it has additional volumeMounts, 
+#   through the projected API 3 things are mounted into /var/run/secrets/kubernetes.io/serviceaccount, 
+#   which are described in detail here:
+#   https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#bound-service-account-token-volume
 apiVersion: v1
 kind: Pod
 metadata:
