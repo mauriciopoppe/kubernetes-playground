@@ -2,6 +2,10 @@
 
 Controlls the binding of a PVC to a PV and from a PV to a PVC.
 
+## kube-controller-manager setup
+
+Read the doc /docs/kube-controller-manager.md
+
 ## Volume Dynamic Provisioning (Pod + PVC + StorageClass with volumeBindingMode Immediate)
 
 - :syncClaim triggered, the PVC doesn't have the pv.kubernetes.io/bind-completed annotation set therefore it's unbound, call :syncUnboundClaim
