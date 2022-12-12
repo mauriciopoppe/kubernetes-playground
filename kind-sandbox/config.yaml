@@ -1,20 +1,21 @@
-kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
 nodes:
-- role: control-plane
-  kubeadmConfigPatches:
-  - |
-    kind: ClusterConfiguration
-    apiServer:
-      extraArgs:
-        enable-admission-plugins: NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
-    controllerManager:
-      extraArgs:
-        v: "5"
-- role: worker
-  kubeadmConfigPatches:
-  - |
-    kind: ClusterConfiguration
-    kubelet:
-      extraArgs:
-        v: "5"
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: ClusterConfiguration
+        apiServer:
+          extraArgs:
+            enable-admission-plugins: NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
+            v: "5"
+        controllerManager:
+          extraArgs:
+            v: "5"
+  - role: worker
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            v: "5"
