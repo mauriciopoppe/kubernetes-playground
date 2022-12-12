@@ -1,3 +1,0 @@
-# Kubelet Volume Manager controller
-
-

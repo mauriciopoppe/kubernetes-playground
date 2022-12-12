@@ -24,3 +24,42 @@ metadata sharedInformer with its versioned client).
 With the `ControllerContext` initialized, we can start the controller initialization, as mentioned, first the
 serviceAccountTokenControllerStarter is initialized and then other controllers located at
 [cmd/kube-controller-manager/app/controllermanager.go](https://github.com/kubernetes/kubernetes/blob/master/cmd/kube-controller-manager/app/controllermanager.go#L416).
+
+## Development
+
+In the kubernetes codebase, compile the kube-controller-manager binary:
+
+```bash
+make WHAT=cmd/kube-controller-manager GOGCFLAGS="-N -l"
+```
+
+Print all the flags available with `./_output/bin/kube-controller-manager --help`.
+
+Assuming that you have a working k8s cluster (e.g. the kind cluster setup in
+`kind-sandbox/`) you'll see that the kube-controller-manager is already running
+as a static Pod. To disable it login into the Node and move the file from the
+location where the kubelet watches for manifests to run.
+
+```bash
+docker exec -it kind-control-plane /bin/bash
+
+# verify that the kube-controller-manager pod is running
+crictl ps
+
+# move the static Pod so that it's no longer watched
+cd /etc/kubernetes
+mkdir manifests-tmp
+mv manifests/kube-controller-manager manifests-tmp
+
+# verify that the kube-controller-manager pod is no longer running
+crictl ps
+```
+
+To run the binary locally connected to a running kube-apiserver:
+
+```bash
+./_output/bin/kube-controller-manager --kubeconfig=${HOME}/.kube/config
+```
+
+To run a subset of the controllers use the flag `--controllers` e.g.
+`--controllers persistentvolume-binder` (search for `func NewControllerInitializers(loopMode ControllerLoopMode)` in the file cmd/kube-controller-manager/app/controllermanager.go
