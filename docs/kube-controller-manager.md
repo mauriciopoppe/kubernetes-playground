@@ -63,3 +63,34 @@ To run the binary locally connected to a running kube-apiserver:
 
 To run a subset of the controllers use the flag `--controllers` e.g.
 `--controllers persistentvolume-binder` (search for `func NewControllerInitializers(loopMode ControllerLoopMode)` in the file cmd/kube-controller-manager/app/controllermanager.go
+
+To run the binary in debug mode:
+
+```bash
+# debugging the PV controller, resync never happens
+dlv --listen :38697 --accept-multiclient --api-version=2 --headless \
+  exec ./_output/bin/kube-controller-manager -- \
+  --kubeconfig=${HOME}/.kube/config --leader-elect=false --v=4 --controllers="persistentvolume-binder,pvc-protection,pv-protection" --pvclaimbinder-sync-period=10000h
+```
+
+Next connect to this instance through your editor, my [nvim-dap lua config](https://github.com/mauriciopoppe/dotfiles/blob/main/neovim/config/plugins/nvim-dap.vim)
+to connect to it:
+
+```
+  {
+    type = "go",
+    name = "Attach kube-controller-manager (remote)",
+    debugAdapter = "dlv-dap",
+    request = "attach",
+    mode = "remote",
+    host = "127.0.0.1",
+    port = "38697",
+    stopOnEntry = false,
+    substitutePath = {
+      {
+          from = "${workspaceFolder}",
+          to = "/Users/mauriciopoppe/go/src/k8s.io/kubernetes/_output/local/go/src/k8s.io/kubernetes",
+      },
+    },
+  },
+```

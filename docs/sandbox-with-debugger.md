@@ -79,47 +79,62 @@ and adapted to connect to a remote process if request = "attach"
 local dap = require "dap"
 dap.adapters.go = function(callback, config)
   local stdout = vim.loop.new_pipe(false)
+  local stderr = vim.loop.new_pipe(false)
   local handle
   local pid_or_err
-  local port = config["port"] or 38697
-  local opts = {
-    stdio = {nil, stdout},
-    args = {"dap", "-l", "127.0.0.1:" .. port},
-    detached = true
-  }
-  if config["request"] == "launch" then
-    -- opts["args"] = {"connect", "--allow-non-terminal-interactive", "127.0.0.1:" .. config["port"]}
-    -- print(vim.inspect(opts))
+  local host = config.host or "127.0.0.1"
+  local port = config.port or "38697"
+  local addr = string.format("%s:%s", host, port)
+  if config.request == "attach" and config.mode == "remote" then
+    local msg = string.format("connecting to server at '%s'...", addr)
+    print(msg)
+  else
+    local opts = {
+      stdio = {nil, stdout, stderr},
+      -- To enable debugging:
+      -- - Uncomment the following line
+      -- args = {"dap", "-l", addr, "--log", "debug", "--log-output", "dap", "--log-dest", "/tmp/dap.log"},
+      -- - Check ~/.cache/nvim/dap.log (I saw set breakpoint errors here)
+      args = {"dap", "-l", addr},
+      detached = true
+    }
+    print(config)
+    print(opts)
+
     handle, pid_or_err = vim.loop.spawn("dlv", opts, function(code)
+      stdout:read_stop()
+      stderr:read_stop()
       stdout:close()
+      stderr:close()
       handle:close()
       if code ~= 0 then
-        print('dlv exited with code', code)
+        print("ERROR: dlv exited with code", code)
       end
     end)
-    assert(handle, 'Error running dlv: ' .. tostring(pid_or_err))
+    assert(handle, "Error running dlv: " .. tostring(pid_or_err))
+
     stdout:read_start(function(err, chunk)
       assert(not err, err)
       if chunk then
         vim.schedule(function()
-          require('dap.repl').append(chunk)
+          require("dap.repl").append(chunk)
         end)
       end
     end)
-    -- Wait for delve to start
-    vim.defer_fn(
-      function()
-        callback({type = "server", host = "127.0.0.1", port = port})
-      end,
-    100)
-  else
-    -- server is already up in remote mode (still needs to be deferred to avoid errors :()
-    vim.defer_fn(
-      function()
-        callback({type = "server", host = "127.0.0.1", port = port})
-      end,
-    100)
+    stderr:read_start(function(err, chunk)
+      assert(not err, err)
+      if chunk then
+        vim.schedule(function()
+          require("dap.repl").append(chunk)
+        end)
+      end
+    end)
   end
+
+  -- Wait for delve to start
+  vim.defer_fn(function()
+    callback({ type = "server", host = host, port = port })
+  end, 100)
 end
 
 dap.configurations.go = {
