@@ -8,8 +8,59 @@ Run `make WHAT=cmd/<target>`, the binaries are at `_output/bin/<target>`, for ex
 
 ```bash
 # DBG=1 sets the gcflags 'all=-N -l'
-make WHAT=cmd/kube-controller-manager DBG=1
+make all WHAT=cmd/kube-controller-manager DBG=1
 ```
+
+## Compiling binaries in debug mode within the kubernetes builder container
+
+In the kubernetes codebase, create the file `build/make-in-container.sh` with the following contents
+
+```bash
+#!/usr/bin/env bash
+
+# Copyright 2014 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Runs a command inside the builder image, it could be used to build a binary.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+KUBE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+source "${KUBE_ROOT}/build/common.sh"
+source "${KUBE_ROOT}/build/lib/release.sh"
+
+KUBE_RELEASE_RUN_TESTS=${KUBE_RELEASE_RUN_TESTS-y}
+
+kube::build::verify_prereqs
+kube::build::build_image
+kube::build::run_build_command $@
+kube::build::copy_output
+```
+
+Then call it like this:
+
+```bash
+KUBE_VERBOSE=0 KUBE_FASTBUILD=true KUBE_RELEASE_RUN_TESTS=n \
+  ./build/make-in-container.sh make all WHAT=cmd/kubelet DBG=1
+```
+
+This is useful for some components like the kubelet that kind runs inside an Ubuntu container, with the above
+we can cross compile it with the linux/arm64 arch and replace it in a running kind cluster.
+
+## Starting a local binary with delve
 
 I use [delve](https://github.com/go-delve/delve) to run the binaries in debug mode
 
@@ -20,8 +71,8 @@ go install github.com/go-delve/delve/cmd/dlv@v1.9.1
 
 **Headless debugging**
 
-The idea is to connect to run delve in server mode (with it running a binary and connecting to the server)
-and to connect to the server through an editor.
+Run delve in server mode with a debug binary (it runs binary and connects to the server), it waits for a client to connect
+to the server through an editor.
 
 See `/docs/sandbox-with-debugger.yaml` for more info about my neovim setup.
 
@@ -77,7 +128,7 @@ nodes:
 
 Public docs: https://kind.sigs.k8s.io/docs/design/node-image/
 
-This is my analysis of what's going on under the hood in https://github.com/kubernetes-sigs/kind/blob/main/pkg/build/nodeimage/internal/kube/builder_docker.go
+This is my analysis of what's going on under the hood in https://github.com/kubernetes-sigs/kind/blob/main/pkg/build/nodeimage/
 
 - chdir to the kubernetes project root, it's assumed to be at $GOPATH/src/k8s.io/kubernetes
 - run the following command to build the binaries:
@@ -131,7 +182,7 @@ kubernetes/_ouptut/dockerized/bin/linux/arm64/{kubeadm,kubelet,kubectl}
 kubernetes/_ouptut/release-images/arm64/kube-{apiserver,controller-manager,proxy,scheduler}.tar
 ```
 
-- It then runs the build container again to install debian packages
+- It then runs a prebuilt kind base image [docker.io/kindest/base](https://github.com/kubernetes-sigs/kind/blob/main/images/base/Dockerfile)
 
 ```bash
 # it actually runs it in detached mode
