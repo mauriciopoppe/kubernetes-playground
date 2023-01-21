@@ -10,5 +10,6 @@ Notes that I learned from contributing to kubernetes
   - [PV controller](./docs/pv-controller.md)
   - [Admission controller - Default StorageClass](./docs/admission-controller-default-storage-class.md)
 - [Kubernetes development](./docs/kubernetes-development.md)
-- [Kubernetes e2e tests](./docs/kubernetes-e2e-tests.md)
+  - [kubelet](./docs/kubelet.md)
+  - [Kubernetes e2e tests](./docs/kubernetes-e2e-tests.md)
 - [Kubernetes utils](./docs/kubernetes-utils.md)

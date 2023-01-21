@@ -124,29 +124,6 @@ nodes:
 
 - Start kind with `kind create cluster --config=./config.yaml --image=kindest/node:latest`
 
-### kubelet development
-
-```bash
-# install tooling for better logging on the worker node
-docker cp $DOTFILES_DIRECTORY/zsh/lib/grc/conf.kubernetes kind-worker:/kind/grcat-kubelet-conf.log
-cat <<EOF | docker exec -i kind-worker bash
-sed -i -re 's/ports.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
-sed -i -re 's/ubuntu-ports/ubuntu/g' /etc/apt/sources.list
-apt-get update
-apt-get install grc -y
-EOF
-
-# cross compile the kubelet to run in the kind-worker arch
-KUBE_VERBOSE=0 KUBE_FASTBUILD=true KUBE_RELEASE_RUN_TESTS=n \
-  ./build/make-in-container.sh make all WHAT=cmd/kubelet DBG=1
-
-# restart kubelet
-docker cp _output/dockerized/bin/linux/arm64/kubelet kind-worker:/usr/bin/kubelet
-docker exec -i kind-worker systemctl restart kubelet
-cat <<EOF | docker exec -i kind-worker bash
-journalctl -u kubelet -f | grcat /kind/grcat-kubelet-conf.log
-EOF
-```
 
 ### How does `kind build node-image` work?
 

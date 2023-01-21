@@ -76,7 +76,7 @@ dlv --listen :38697 --accept-multiclient --api-version=2 --headless \
 Next connect to this instance through your editor, my [nvim-dap lua config](https://github.com/mauriciopoppe/dotfiles/blob/main/neovim/config/plugins/nvim-dap.vim)
 to connect to it:
 
-```
+```lua
   {
     type = "go",
     name = "Attach kube-controller-manager (remote)",
