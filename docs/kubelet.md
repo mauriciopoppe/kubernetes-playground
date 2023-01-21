@@ -88,8 +88,8 @@ In another terminal, exec into the kubelet and see the kubelet output
 journalctl -u kubelet -f | grcat /kind/grcat-kubelet-conf.log
 ```
 
-![kubelet journalctl logs][https://user-images.githubusercontent.com/1616682/213890085-20e22c5c-7cc5-4daa-bc5c-4e64a3dcf71b.png]
+![kubelet journalctl logs](https://user-images.githubusercontent.com/1616682/213890085-20e22c5c-7cc5-4daa-bc5c-4e64a3dcf71b.png)
 
 In my nvim editor set breakpoints and connect nvim-dap to the kubelet server
 
-![breakpoints in nvim][https://user-images.githubusercontent.com/1616682/213890345-2be28772-c488-4b46-9569-1cdf2c5c6905.png]
+![breakpoints in nvim](https://user-images.githubusercontent.com/1616682/213890345-2be28772-c488-4b46-9569-1cdf2c5c6905.png)
