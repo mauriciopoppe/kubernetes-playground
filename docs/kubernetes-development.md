@@ -60,7 +60,7 @@ KUBE_VERBOSE=0 KUBE_FASTBUILD=true KUBE_RELEASE_RUN_TESTS=n \
 This is useful for some components like the kubelet that kind runs inside an Ubuntu container, with the above
 we can cross compile it with the linux/arm64 arch and replace it in a running kind cluster.
 
-## Starting a local binary with delve
+## Debug a binary with delve
 
 I use [delve](https://github.com/go-delve/delve) to run the binaries in debug mode
 
@@ -71,8 +71,7 @@ go install github.com/go-delve/delve/cmd/dlv@v1.9.1
 
 **Headless debugging**
 
-Run delve in server mode with a debug binary (it runs binary and connects to the server), it waits for a client to connect
-to the server through an editor.
+Run delve in server mode with a debug binary (it creates a delve server, it connects to the server and starts the target binary), it waits for a client to connect to the server through an editor.
 
 See `/docs/sandbox-with-debugger.yaml` for more info about my neovim setup.
 
@@ -98,32 +97,7 @@ Steps:
 - Read the steps in https://github.com/kubernetes/community/blob/master/contributors/devel/development.md#building-kubernetes-on-a-local-osshell-environment, install dependencies if needed
 - Run `kind build node-image`
 - Create a configuration file like the one in `/kind-sandbox` e.g.
-
-```
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-  kubeadmConfigPatches:
-  - |
-    kind: ClusterConfiguration
-    apiServer:
-      extraArgs:
-        enable-admission-plugins: NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
-    controllerManager:
-      extraArgs:
-        v: "5"
-- role: worker
-  kubeadmConfigPatches:
-  - |
-    kind: ClusterConfiguration
-    kubelet:
-      extraArgs:
-        v: "5"
-```
-
-- Start kind with `kind create cluster --config=./config.yaml --image=kindest/node:latest`
-
+- Start kind with `kind create cluster --config=./config.yaml --image=kindest/node:main`
 
 ### How does `kind build node-image` work?
 

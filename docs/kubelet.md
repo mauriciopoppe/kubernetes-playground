@@ -35,7 +35,7 @@ apt-get update && apt-get install grc curl golang-go -y; \
 GOPATH=/root/go/bin go install github.com/go-delve/delve/cmd/dlv@latest; \
 cp /root/go/bin/dlv /usr/local/bin; \
 "
-# start kubelet with dlv
+# update the kubelet systemd config to start it through delve
 docker cp debug/kubelet/10-kubeadm.conf kind-worker:/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 # pretty logs
 docker cp $DOTFILES_DIRECTORY/zsh/lib/grc/conf.kubernetes kind-worker:/kind/grcat-kubelet-conf.log
