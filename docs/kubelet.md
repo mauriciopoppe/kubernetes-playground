@@ -22,17 +22,17 @@ The steps are:
   - make your editor forward breakpoints to the delve server
   - delve will stop at the breakpoints set 🥳
 
-### One time env setup
+### One time env setup (install instrumentation directly into the kind-worker)
 
 ```bash
 # install tooling for better logging on the worker node
-# (this is for kind but a similar script should work in a VM)
+# (this is for a kind cluster but a similar script should work in a VM)
 docker exec -i kind-worker bash -c "
 set -x; \
 sed -i -re 's/ports.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list; \
 sed -i -re 's/ubuntu-ports/ubuntu/g' /etc/apt/sources.list; \
-apt-get update && apt-get install grc curl golang-go -y; \
-GOPATH=/root/go/bin go install github.com/go-delve/delve/cmd/dlv@latest; \
+apt-get update && apt-get install grc golang-go -y; \
+GOPATH=/root/go go install github.com/go-delve/delve/cmd/dlv@latest; \
 cp /root/go/bin/dlv /usr/local/bin; \
 "
 # update the kubelet systemd config to start it through delve
@@ -64,6 +64,24 @@ In my nvim editor I set the following nvim lua config to debug it through nvim-d
       },
     },
   },
+```
+
+### Alternative one time setup (install instrumentation through a sidecar with cdebug)
+
+An alternative is to install the tooling needed for debugging through a sidecar
+container, this can be done through [cdebug](https://github.com/iximiuz/cdebug)
+
+- Build the kubelet-debug:latest sidecar
+
+```bash
+# PWD is the root of this repo
+make -C ./debug kubelet-debug
+```
+
+- Instrument any `kind-worker` container
+
+```bash
+cdebug exec --image kubelet-debug:latest -it docker://kind-worker '$CDEBUG_WORKSPACE/app/kubelet-debug-entrypoint.sh'
 ```
 
 ### Normal workflow

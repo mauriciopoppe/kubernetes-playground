@@ -5,7 +5,7 @@ Notes that I learned from contributing to kubernetes
 - [Running experiments with skaffold](./docs/sandbox-with-debugger.md)
 - [kubernetes-sigs/controller-runtime notes](./docs/controller-runtime.md)
 - Kubernetes controllers
-  - [kube-controller-manager](./docs/kube-controller-manager.md)
+  - [Kube Controller Manager](./docs/kube-controller-manager.md)
   - [Attach/Detach controller](./docs/attach-detach-controller.md)
   - [PV controller](./docs/pv-controller.md)
   - [Admission controller - Default StorageClass](./docs/admission-controller-default-storage-class.md)
