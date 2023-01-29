@@ -7,7 +7,7 @@ install() {
   systemd=/etc/systemd/system
   mkdir -p "${systemd}/kubelet-debug.service.d"
   cp $CDEBUG_WORKSPACE/app/kubelet-debug.service "${systemd}"
-  cp $CDEBUG_WORKSPACE/app/10-kubeadm.conf "${systemd}/kubelet-debug.service.d/10-kubeadmin.conf"
+  cp $CDEBUG_WORKSPACE/app/10-kubeadm.conf "${systemd}/kubelet-debug.service.d/10-kubeadm.conf"
   cp $CDEBUG_WORKSPACE/app/conf.kubernetes "${systemd}/kubelet-debug.service.d/conf.kubernetes"
 
   # copy kubelet to a debug file if it doesn't exist already

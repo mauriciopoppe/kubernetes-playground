@@ -22,26 +22,9 @@ The steps are:
   - make your editor forward breakpoints to the delve server
   - delve will stop at the breakpoints set 🥳
 
-### One time env setup (install instrumentation directly into the kind-worker)
+### Editor (one time setup)
 
-```bash
-# install tooling for better logging on the worker node
-# (this is for a kind cluster but a similar script should work in a VM)
-docker exec -i kind-worker bash -c "
-set -x; \
-sed -i -re 's/ports.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list; \
-sed -i -re 's/ubuntu-ports/ubuntu/g' /etc/apt/sources.list; \
-apt-get update && apt-get install grc golang-go -y; \
-GOPATH=/root/go go install github.com/go-delve/delve/cmd/dlv@latest; \
-cp /root/go/bin/dlv /usr/local/bin; \
-"
-# update the kubelet systemd config to start it through delve
-docker cp debug/kubelet/10-kubeadm.conf kind-worker:/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-# pretty logs
-docker cp $DOTFILES_DIRECTORY/zsh/lib/grc/conf.kubernetes kind-worker:/kind/grcat-kubelet-conf.log
-```
-
-In my nvim editor I set the following nvim lua config to debug it through nvim-dap:
+In my nvim editor I set the following nvim-dap lua config:
 
 ```lua
   {
@@ -66,7 +49,27 @@ In my nvim editor I set the following nvim lua config to debug it through nvim-d
   },
 ```
 
-### Alternative one time setup (install instrumentation through a sidecar with cdebug)
+### Instrument the kubelet for debugging (one time setup)
+
+```bash
+# install tooling for better logging on the worker node
+# (this is for a kind cluster but a similar script should work in a VM)
+docker exec -i kind-worker bash -c "
+set -x; \
+sed -i -re 's/ports.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list; \
+sed -i -re 's/ubuntu-ports/ubuntu/g' /etc/apt/sources.list; \
+apt-get update && apt-get install grc golang-go -y; \
+GOPATH=/root/go go install github.com/go-delve/delve/cmd/dlv@latest; \
+cp /root/go/bin/dlv /usr/local/bin; \
+mkdir -p /etc/systemd/system/kubelet-debug.service.d/
+"
+# setup kubelet-debug service and pretty log format
+docker cp debug/kubelet/kubelet-debug.service kind-worker:/etc/systemd/system/kubelet-debug.service
+docker cp debug/kubelet/10-kubeadm.conf kind-worker:/etc/systemd/system/kubelet-debug.service.d/10-kubeadm.conf
+docker cp debug/kubelet/conf.kubernetes kind-worker:/etc/systemd/system/kubelet-debug.service.d/conf.kubernetes
+```
+
+### Instrument the kubelet for debugging through a sidecar (alternative one time setup)
 
 An alternative is to install the tooling needed for debugging through a sidecar
 container, this can be done through [cdebug](https://github.com/iximiuz/cdebug)
@@ -95,14 +98,14 @@ KUBE_VERBOSE=0 KUBE_FASTBUILD=true KUBE_RELEASE_RUN_TESTS=n \
   ./build/make-in-container.sh make all WHAT=cmd/kubelet DBG=1
 
 # restart kubelet
-docker cp _output/dockerized/bin/linux/arm64/kubelet kind-worker:/usr/bin/kubelet
-docker exec -i kind-worker bash -c "systemctl daemon-reload; systemctl restart kubelet"
+docker cp _output/dockerized/bin/linux/arm64/kubelet kind-worker:/usr/bin/kubelet-debug
+docker exec -i kind-worker bash -c "systemctl daemon-reload; systemctl restart kubelet-debug"
 ```
 
 In another terminal, exec into the kubelet and see the kubelet output
 
 ```bash
-journalctl -u kubelet -f | grcat /kind/grcat-kubelet-conf.log
+journalctl -u kubelet-debug -f | grcat /etc/systemd/system/kubelet-debug.service.d/conf.kubernetes
 ```
 
 ![kubelet journalctl logs](https://user-images.githubusercontent.com/1616682/213890085-20e22c5c-7cc5-4daa-bc5c-4e64a3dcf71b.png)
