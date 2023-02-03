@@ -1,11 +1,12 @@
-apiVersion: skaffold/v2beta15
+apiVersion: skaffold/v4beta2
 kind: Config
 build:
   artifacts:
   - image: hello-world-windows
     custom:
       buildCommand: APP=hello-world-windows make build-and-push-multi-arch-debug
+manifests:
+  rawYaml:
+  - cmd/hello-world-windows/deploy/hello-world-windows.yaml
 deploy:
-  kubectl:
-    manifests:
-      - cmd/hello-world-windows/deploy/hello-world-windows.yaml
+  kubectl: {}

@@ -15,14 +15,29 @@ I used this in:
 
 ## Setup
 
-With skaffold and delve
+- Verify that you have these version of delve and skaffold installed
 
-- add this line to ~/.config/dlv/config.yml (or ~/.dlv/config.yml in macOS)
+```bash
+skaffold version
+v2.1.0
+
+dlv version
+v1.20.1
+```
+
+- add this line to "${XDG_CONFIG_HOME}/dlv/config.yml" ([docs](https://github.com/go-delve/delve/blob/master/Documentation/cli/README.md)),
+read [Can not set breakpoints or see source listing in a complicated debugging environment](https://github.com/go-delve/delve/blob/master/Documentation/faq.md#-can-not-set-breakpoints-or-see-source-listing-in-a-complicated-debugging-environment)
+for more details
 
 ```yaml
 substitute-path:
-  # - {from: path, to: path}
-  - { from: /go/src/github.com/mauriciopoppe/kubernetes-playground, to: ./ }
+  - {
+      from: /go/src/github.com/mauriciopoppe/kubernetes-playground/,
+
+      # Alternative if the debugger is launched from a different workspace
+      # to: /Users/mauriciopoppe/go/src/github.com/mauriciopoppe/kubernetes-playground/
+      to: ./,
+    }
 ```
 
 - create the namespace for the app
@@ -37,13 +52,32 @@ kubectl create namespace sandbox
 skaffold debug -f cmd/hello-world-linux/skaffold.yaml
 ```
 
-### Connecting to the process with the terminal
+### Connecting to the process with `delve connect`
 
 ```bash
-dlv connect localhost:56268
+# NOTE: make sure that you're in the project root
+$ pwd
+/Users/mauriciopoppe/go/src/github.com/mauriciopoppe/kubernetes-playground
 
-(dlv) b main.go:46
-Breakpoint 1 set at 0x118b754 for main.main() ./cmd/hello-world-linux/main.go:46
+$ dlv connect localhost:56268
+
+(dlv) l main.main
+Showing /go/src/github.com/mauriciopoppe/kubernetes-playground/cmd/hello-world-linux/main.go:25 (PC: 0x1160180)
+    20:         // version is filled by an ldflag (see the Dockerfile)
+    21:         version    string
+    22:         kubeconfig = flag.String("kubeconfig", "", "Absolute path to the kubeconfig file. Required only when running out of cluster.")
+    23: )
+    24:
+    25: func main() {
+    26:         klog.InitFlags(flag.CommandLine)
+    27:         flag.Set("logtostderr", "true")
+    28:         flag.Parse()
+    29:         klog.Infof("Version %+v", version)
+    30:
+
+(dlv) b cmd/hello-world-linux/main.go:46
+Breakpoint 1 set at 0x11aa794 for main.main() ./cmd/hello-world-linux/main.go:46
+
 (dlv) c
 > main.main() ./cmd/hello-world-linux/main.go:46 (hits goroutine(1):1 total:1) (PC: 0x118b754)
     41:                 os.Exit(1)

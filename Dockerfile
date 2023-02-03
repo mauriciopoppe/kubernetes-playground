@@ -1,4 +1,6 @@
-FROM golang as builder
+# skaffold debug only works with go<=1.19 because of the delve version used
+# in https://github.com/GoogleContainerTools/container-debug-support/blob/duct-tape/go/helper-image/Dockerfile
+FROM golang:1.19 as builder
 
 WORKDIR /go/src/github.com/mauriciopoppe/kubernetes-playground/
 ADD go.mod .
