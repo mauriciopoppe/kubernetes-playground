@@ -20,6 +20,12 @@ install() {
     cp $CDEBUG_WORKSPACE/app/bin/dlv /usr/bin/dlv
   fi
 
+  # copy tooling (grcat)
+  if [[ ! -f /usr/bin/grcat ]]; then
+    cp $CDEBUG_WORKSPACE/app/bin/grcat /usr/bin/grcat
+    cp $CDEBUG_WORKSPACE/app/bin/grc /usr/bin/grc
+  fi
+
   # start kubelet-debug unit and disable kubelet unit
   systemctl daemon-reload
   systemctl disable kubelet && systemctl stop kubelet

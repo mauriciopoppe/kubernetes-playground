@@ -25,7 +25,7 @@ dlv version
 v1.20.1
 ```
 
-- add this line to "${XDG_CONFIG_HOME}/dlv/config.yml" ([docs](https://github.com/go-delve/delve/blob/master/Documentation/cli/README.md)),
+- add this line to `${XDG_CONFIG_HOME}/dlv/config.yml` ([docs](https://github.com/go-delve/delve/blob/master/Documentation/cli/README.md)),
 read [Can not set breakpoints or see source listing in a complicated debugging environment](https://github.com/go-delve/delve/blob/master/Documentation/faq.md#-can-not-set-breakpoints-or-see-source-listing-in-a-complicated-debugging-environment)
 for more details
 

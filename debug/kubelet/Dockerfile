@@ -11,6 +11,10 @@ COPY --from=go /go/src/github.com/garabik/grc /app/grc
 
 WORKDIR /app
 ADD . .
-RUN (cd ./grc && ./install.sh)
+
+# I read https://github.com/garabik/grc/blob/master/install.sh
+# to find out that $1 is the prefix where the binaries (grcat, grc)
+# will be installed into.
+RUN (cd ./grc && ./install.sh /app/)
 
 ENTRYPOINT ["sleep", "infinity"]

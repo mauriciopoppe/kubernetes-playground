@@ -21,21 +21,7 @@ nodes:
         kind: InitConfiguration
         nodeRegistration:
           kubeletExtraArgs:
-            v: "2"
-      - |
-        kind: KubeletConfiguration
-        shutdownGracePeriod: 30s
-        shutdownGracePeriodCriticalPods: 15s
-  - role: worker
-    extraPortMappings:
-      - containerPort: 56269
-        hostPort: 56269
-    kubeadmConfigPatches:
-      - |
-        kind: InitConfiguration
-        nodeRegistration:
-          kubeletExtraArgs:
-            v: "2"
+            v: "4"
       - |
         kind: KubeletConfiguration
         shutdownGracePeriod: 30s

@@ -74,7 +74,7 @@ docker cp debug/kubelet/conf.kubernetes kind-worker:/etc/systemd/system/kubelet-
 An alternative is to install the tooling needed for debugging through a sidecar
 container, this can be done through [cdebug](https://github.com/iximiuz/cdebug)
 
-- Build the kubelet-debug:latest sidecar
+- Build the kubelet-debug:latest sidecar (the Dockerfile is in this repo)
 
 ```bash
 # PWD is the root of this repo
@@ -102,9 +102,10 @@ docker cp _output/dockerized/bin/linux/arm64/kubelet kind-worker:/usr/bin/kubele
 docker exec -i kind-worker bash -c "systemctl daemon-reload; systemctl restart kubelet-debug"
 ```
 
-In another terminal, exec into the kubelet and see the kubelet output
+In another terminal, exec into the kind-worker container and see the kubelet output
 
 ```bash
+docker exec -it kind-worker bash
 journalctl -u kubelet-debug -f | grcat /etc/systemd/system/kubelet-debug.service.d/conf.kubernetes
 ```
 
