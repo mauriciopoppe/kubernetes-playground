@@ -17,9 +17,6 @@ install() {
   cp $CDEBUG_WORKSPACE/app/bin/grcat /usr/bin/grcat
   cp $CDEBUG_WORKSPACE/app/bin/grc /usr/bin/grc
 
-  echo "Tools installed"
-  dlv version
-
   # it's assumed that the kubelet-debug binary will be replaced
   # later with a version of the kubelet compiled in debug mode.
   #

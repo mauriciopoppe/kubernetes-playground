@@ -4,6 +4,23 @@
 
 Requirements:
 
+- Tools
+```bash
+kind --version
+kind version 0.17.0
+
+dlv version
+Delve Debugger
+Version: 1.20.2
+Build: $Id: e0c278ad8e0126a312b553b8e171e81bcbd37f60 $
+
+docker version
+Engine:
+  Version:          20.10.24
+
+kubernetes at tag 1.25.3
+```
+
 - The kind worker node exposes a port used for debugging, this could be done through
   the config sent to kind (see /kind-sandbox/config-worker-dlv.yaml) or through cdebug
   which can forward requests to a running container
