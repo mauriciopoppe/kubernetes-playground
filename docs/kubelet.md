@@ -106,7 +106,7 @@ In another terminal, exec into the kind-worker container and see the kubelet out
 
 ```bash
 docker exec -it kind-worker bash
-journalctl -u kubelet-debug -f | grcat /etc/systemd/system/kubelet-debug.service.d/conf.kubernetes
+journalctl --since "$(systemctl show -p ActiveEnterTimestamp kubelet-debug | awk '{print $2 $3}')" -u kubelet-debug -f | grcat /etc/systemd/system/kubelet-debug.service.d/conf.kubernetes
 ```
 
 ![kubelet journalctl logs](https://user-images.githubusercontent.com/1616682/213890085-20e22c5c-7cc5-4daa-bc5c-4e64a3dcf71b.png)

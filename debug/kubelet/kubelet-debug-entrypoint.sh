@@ -10,26 +10,31 @@ install() {
   cp $CDEBUG_WORKSPACE/app/10-kubeadm.conf "${systemd}/kubelet-debug.service.d/10-kubeadm.conf"
   cp $CDEBUG_WORKSPACE/app/conf.kubernetes "${systemd}/kubelet-debug.service.d/conf.kubernetes"
 
-  # copy kubelet to a debug file if it doesn't exist already
-  if [[ ! -f /usr/bin/kubelet-debug ]]; then
-    cp /usr/bin/kubelet /usr/bin/kubelet-debug
-  fi
-
   # copy dlv if not already there
-  if [[ ! -f /usr/bin/dlv ]]; then
-    cp $CDEBUG_WORKSPACE/app/bin/dlv /usr/bin/dlv
-  fi
+  cp $CDEBUG_WORKSPACE/app/bin/dlv /usr/bin/dlv
 
   # copy tooling (grcat)
-  if [[ ! -f /usr/bin/grcat ]]; then
-    cp $CDEBUG_WORKSPACE/app/bin/grcat /usr/bin/grcat
-    cp $CDEBUG_WORKSPACE/app/bin/grc /usr/bin/grc
-  fi
+  cp $CDEBUG_WORKSPACE/app/bin/grcat /usr/bin/grcat
+  cp $CDEBUG_WORKSPACE/app/bin/grc /usr/bin/grc
 
+  echo "Tools installed"
+  dlv version
+
+  # it's assumed that the kubelet-debug binary will be replaced
+  # later with a version of the kubelet compiled in debug mode.
+  #
   # start kubelet-debug unit and disable kubelet unit
   systemctl daemon-reload
   systemctl disable kubelet && systemctl stop kubelet
   systemctl enable kubelet-debug && systemctl start kubelet-debug
+
+  # Success message
+  (tput setaf 2; \
+    echo "kind-worker patched with new kubelet!"; \
+    echo "next step: copy the kubelet debug image to /usr/bin/kubelet-debug"; \
+    echo ""; \
+    echo "Keep this terminal alive while you're on your debugging session."; \
+    tput sgr0)
 }
 
 restore() {

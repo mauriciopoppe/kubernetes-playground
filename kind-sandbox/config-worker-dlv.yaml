@@ -8,23 +8,17 @@ nodes:
         apiServer:
           extraArgs:
             enable-admission-plugins: NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
-            v: "5"
+            v: "4"
         controllerManager:
           extraArgs:
-            v: "5"
+            v: "4"
   - role: worker
     extraPortMappings:
       - containerPort: 56268
         hostPort: 56268
-        # optional: set the bind address on the host
-        # 0.0.0.0 is the current default
-        listenAddress: "127.0.0.1"
-        # optional: set the protocol to one of TCP, UDP, SCTP.
-        # TCP is the default
-        protocol: TCP
     kubeadmConfigPatches:
       - |
         kind: InitConfiguration
         nodeRegistration:
           kubeletExtraArgs:
-            v: "5"
+            v: "4"

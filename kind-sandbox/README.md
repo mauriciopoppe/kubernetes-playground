@@ -6,7 +6,7 @@
 kind create cluster --config=./config.yaml
 ```
 
-Or by buidling an image from a kubernetes version.
+Or by building an image from a kubernetes version.
 
 ```bash
 # Using a dev build using the k8s source in $GOPATH/k8s.io/kubernetes

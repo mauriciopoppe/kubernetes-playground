@@ -30,7 +30,7 @@ serviceAccountTokenControllerStarter is initialized and then other controllers l
 In the kubernetes codebase, compile the kube-controller-manager binary:
 
 ```bash
-make WHAT=cmd/kube-controller-manager GOGCFLAGS="-N -l"
+make WHAT=cmd/kube-controller-manager DBG=1
 ```
 
 Print all the flags available with `./_output/bin/kube-controller-manager --help`.
@@ -49,7 +49,7 @@ crictl ps
 # move the static Pod so that it's no longer watched
 cd /etc/kubernetes
 mkdir manifests-tmp
-mv manifests/kube-controller-manager manifests-tmp
+mv manifests/kube-controller-manager.yaml manifests-tmp
 
 # verify that the kube-controller-manager pod is no longer running
 crictl ps
@@ -93,4 +93,17 @@ to connect to it:
       },
     },
   },
+```
+
+To undo the kube-controller-manager setup and run the static Pod again:
+
+```bash
+docker exec -it kind-control-plane /bin/bash
+
+# move the static Pod so that it's watched again
+cd /etc/kubernetes
+mv manifests-tmp/kube-controller-manager.yaml manifests
+
+# verify that the kube-controller-manager pod is running
+crictl ps
 ```

@@ -8,10 +8,10 @@ nodes:
         apiServer:
           extraArgs:
             enable-admission-plugins: NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
-            v: "5"
+            v: "4"
         controllerManager:
           extraArgs:
-            v: "5"
+            v: "4"
   - role: worker
     extraPortMappings:
       - containerPort: 56268
