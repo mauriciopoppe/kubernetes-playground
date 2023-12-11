@@ -7,23 +7,29 @@ Requirements:
 - Tools
 ```bash
 kind --version
-kind version 0.17.0
+kind version 0.20.0
 
 dlv version
-Delve Debugger
-Version: 1.20.2
-Build: $Id: e0c278ad8e0126a312b553b8e171e81bcbd37f60 $
+Version: 1.21.0
 
 docker version
 Engine:
   Version:          20.10.24
 
-kubernetes at tag 1.25.3
+kubernetes at tag v1.27.3
 ```
 
 - The kind worker node exposes a port used for debugging, this could be done through
   the config sent to kind (see /kind-sandbox/config-worker-dlv.yaml) or through cdebug
-  which can forward requests to a running container
+  which can forward requests to a running container.
+
+```
+# NOTE: The host should forward port 56269 to the worker node container.
+docker ps
+CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS                  PORTS                       NAMES
+3ce7114e45c1   kindest/node:v1.27.3            "/usr/local/bin/entr…"   24 seconds ago   Up Less than a second   127.0.0.1:43551->6443/tcp   kind-control-plane
+336b28d05659   kindest/node:v1.27.3            "/usr/local/bin/entr…"   24 seconds ago   Up Less than a second   0.0.0.0:56268->56268/tcp    kind-worker
+```
 
 The steps are:
 
@@ -89,7 +95,16 @@ docker cp debug/kubelet/conf.kubernetes kind-worker:/etc/systemd/system/kubelet-
 ### Instrument the kubelet for debugging through a sidecar (alternative one time setup)
 
 An alternative is to install the tooling needed for debugging through a sidecar
-container, this can be done through [cdebug](https://github.com/iximiuz/cdebug)
+container, this can be done through [cdebug](https://github.com/iximiuz/cdebug) and this
+pull request https://github.com/iximiuz/cdebug/pull/12
+
+- Checkout to the above PR by cloning my fork and build a custom version of `cdebug`
+
+```bash
+# in the cdebug codebase
+make build-dev
+cp cdebug ~/go/bin/
+```
 
 - Build the kubelet-debug:latest sidecar (the Dockerfile is in this repo)
 
@@ -115,6 +130,7 @@ KUBE_VERBOSE=0 KUBE_FASTBUILD=true KUBE_RELEASE_RUN_TESTS=n \
   ./build/make-in-container.sh make all WHAT=cmd/kubelet DBG=1
 
 # restart kubelet
+# NOTE: the path might need to be updated depending on the platform (amd64, arm64)
 docker cp _output/dockerized/bin/linux/arm64/kubelet kind-worker:/usr/bin/kubelet-debug
 docker exec -i kind-worker bash -c "systemctl daemon-reload; systemctl restart kubelet-debug"
 ```
