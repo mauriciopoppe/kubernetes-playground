@@ -4,19 +4,49 @@
 
 Requirements:
 
-- Tools
+- Tools, k8s tag
+
 ```bash
-kind --version
-kind version 0.20.0
+kind --version && dlv version && docker version && (cd $GOPATH/src/k8s.io/kubernetes && git log -1)
 
-dlv version
-Version: 1.21.0
+kind version 0.22.0
+Delve Debugger
+Version: 1.22.0
+Build: $Id: 61ecdbbe1b574f0dd7d7bad8b6a5d564cce981e9 $
+Client:
+ Cloud integration: v1.0.31
+ Version:           20.10.24
+ API version:       1.41
+ Go version:        go1.19.7
+ Git commit:        297e128
+ Built:             Tue Apr  4 18:21:21 2023
+ OS/Arch:           darwin/arm64
+ Context:           default
+ Experimental:      true
 
-docker version
-Engine:
+Server: Docker Desktop 4.18.0 (104112)
+ Engine:
   Version:          20.10.24
+  API version:      1.41 (minimum version 1.12)
+  Go version:       go1.19.7
+  Git commit:       5d6db84
+  Built:            Tue Apr  4 18:17:07 2023
+  OS/Arch:          linux/arm64
+  Experimental:     false
+ containerd:
+  Version:          1.6.18
+  GitCommit:        2456e983eb9e37e47538f59ea18f2043c9a73640
+ runc:
+  Version:          1.1.4
+  GitCommit:        v1.1.4-0-g5fd4c4d
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+commit 4b8e819355d791d96b7e9d9efe4cbafae2311c88 (HEAD, tag: v1.29.2)
+Author: Kubernetes Release Robot <k8s-release-robot@users.noreply.github.com>
+Date:   Wed Feb 14 10:32:39 2024 +0000
 
-kubernetes at tag v1.27.3
+    Release commit for Kubernetes v1.29.2
 ```
 
 - The kind worker node exposes a port used for debugging, this could be done through
@@ -110,7 +140,7 @@ docker exec -i kind-worker bash -c "
 set -x; \
 sed -i -re 's/ports.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list; \
 sed -i -re 's/ubuntu-ports/ubuntu/g' /etc/apt/sources.list; \
-apt-get update && apt-get install grc golang-go -y; \
+apt-get update && apt-get install grc golang-go python3 -y; \
 GOPATH=/root/go go install github.com/go-delve/delve/cmd/dlv@latest; \
 cp /root/go/bin/dlv /usr/local/bin; \
 mkdir -p /etc/systemd/system/kubelet-debug.service.d/
@@ -141,7 +171,6 @@ In another terminal, exec into the kind-worker container and see the kubelet out
 
 ```bash
 docker exec -it kind-worker bash
-sudo apt-get install python3
 journalctl --since "$(systemctl show -p ActiveEnterTimestamp kubelet-debug | awk '{print $2 $3}')" -u kubelet-debug -f | grcat /etc/systemd/system/kubelet-debug.service.d/conf.kubernetes
 ```
 

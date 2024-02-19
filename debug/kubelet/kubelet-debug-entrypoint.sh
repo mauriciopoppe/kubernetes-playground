@@ -17,6 +17,10 @@ install() {
   cp $CDEBUG_WORKSPACE/app/bin/grcat /usr/bin/grcat
   cp $CDEBUG_WORKSPACE/app/bin/grc /usr/bin/grc
 
+  if ! command -v python3 &> /dev/null; then
+    apt update && apt install -y python3
+  fi
+
   # it's assumed that the kubelet-debug binary will be replaced
   # later with a version of the kubelet compiled in debug mode.
   #
@@ -28,7 +32,7 @@ install() {
   # Success message
   (tput setaf 2; \
     echo "kind-worker patched with new kubelet!"; \
-    echo "next step: copy the kubelet debug image to /usr/bin/kubelet-debug"; \
+    echo "next step: copy the kubelet binary compiled with debug symbols to /usr/bin/kubelet-debug"; \
     echo ""; \
     echo "Keep this terminal alive while you're on your debugging session."; \
     tput sgr0)
@@ -43,4 +47,5 @@ restore() {
 install
 trap restore exit
 
-bash
+# start /bin/bash
+/bin/bash

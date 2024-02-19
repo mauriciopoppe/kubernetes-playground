@@ -1,3 +1,7 @@
+# (playground comment): I copied this file as it is from
+# https://github.com/kubernetes-sigs/kind/blob/main/images/base/files/etc/systemd/system/kubelet.service
+# because the kubelet-debug.service should start the same way as the kubelet.service.
+#
 # slightly modified from:
 # https://github.com/kubernetes/kubernetes/blob/ba8fcafaf8c502a454acd86b728c857932555315/build/debs/kubelet.service
 [Unit]

@@ -1,6 +1,6 @@
 FROM golang:bullseye AS go
 RUN apt update && apt install git -y
-RUN go install github.com/go-delve/delve/cmd/dlv@v1.20.2
+RUN go install github.com/go-delve/delve/cmd/dlv@v1.22.0
 RUN git clone https://github.com/garabik/grc.git /go/src/github.com/garabik/grc
 
 FROM debian:bullseye
