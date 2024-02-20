@@ -66,8 +66,8 @@ The steps are:
 - one time env setup
   - Install tools that will allow debugging like delve and grc
   - Install a custom systemd config for the kubelet that runs it through delve
-  - Install a pretty log formatter for grc, this is optional but I like a way to distinguish different lines logged
-    by journalctl
+  - Install a pretty log formatter for grc, this is optional but I like a way to distinguish
+    different lines logged by journalctl
   - Configure your editor to connect to the server
 - normal workflow
   - make changes in the k8s codebase, recompile the kubelet and sync it to the kind node
@@ -151,7 +151,7 @@ docker cp debug/kubelet/10-kubeadm.conf kind-worker:/etc/systemd/system/kubelet-
 docker cp debug/kubelet/conf.kubernetes kind-worker:/etc/systemd/system/kubelet-debug.service.d/conf.kubernetes
 ```
 
-### Normal workflow
+### Regular workflow
 
 In the kubernetes codebase, recompile the kubelet and run it in the worker:
 
