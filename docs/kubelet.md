@@ -107,15 +107,18 @@ For more info about this setup please [check my dotfiles](https://github.com/mau
 ### Instrument the kubelet for debugging through a sidecar (automated one time setup)
 
 An alternative is to install the tooling needed for debugging through a sidecar
-container, this can be done through [cdebug](https://github.com/iximiuz/cdebug) and this
-pull request https://github.com/iximiuz/cdebug/pull/12.
+container, this can be done through [cdebug](https://github.com/iximiuz/cdebug).
 
-- Checkout to the above PR by cloning my fork and build a custom version of `cdebug`
+- Install cdebug
 
-```bash
-# in the cdebug codebase
-make build-dev
-cp cdebug ~/go/bin/
+```
+GOOS=darwin
+GOARCH=arm64
+curl -Ls https://github.com/iximiuz/cdebug/releases/latest/download/cdebug_${GOOS}_${GOARCH}.tar.gz | tar xvz
+sudo mv cdebug /usr/local/bin
+
+cdebug --version
+cdebug version 0.0.17
 ```
 
 - Build the kubelet-debug:latest sidecar (the Dockerfile is in this repo)
@@ -128,7 +131,7 @@ make -C ./debug kubelet-debug
 - Instrument any `kind-worker` container
 
 ```bash
-cdebug exec --image kubelet-debug:latest -it docker://kind-worker '$CDEBUG_WORKSPACE/app/kubelet-debug-entrypoint.sh'
+cdebug exec --image kubelet-debug:latest -it docker://kind-worker '$CDEBUG_ROOTFS/app/kubelet-debug-entrypoint.sh'
 ```
 
 ### Instrument the kubelet for debugging (alternative one time manual setup)

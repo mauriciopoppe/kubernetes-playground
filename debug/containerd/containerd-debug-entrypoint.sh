@@ -6,14 +6,14 @@ install() {
   # setup systemd containerd-debug.service unit
   systemd=/etc/systemd/system
   mkdir -p "${systemd}/containerd-debug.service.d"
-  cp $CDEBUG_WORKSPACE/app/containerd-debug.service "${systemd}"
+  cp $CDEBUG_ROOTFS/app/containerd-debug.service "${systemd}"
 
   # copy dlv if not already there
-  cp $CDEBUG_WORKSPACE/app/bin/dlv /usr/bin/dlv
+  cp $CDEBUG_ROOTFS/app/bin/dlv /usr/bin/dlv
 
   # copy tooling (grcat)
-  cp $CDEBUG_WORKSPACE/app/bin/grcat /usr/bin/grcat
-  cp $CDEBUG_WORKSPACE/app/bin/grc /usr/bin/grc
+  cp $CDEBUG_ROOTFS/app/bin/grcat /usr/bin/grcat
+  cp $CDEBUG_ROOTFS/app/bin/grc /usr/bin/grc
 
   if ! command -v python3 &> /dev/null; then
     apt update && apt install -y python3

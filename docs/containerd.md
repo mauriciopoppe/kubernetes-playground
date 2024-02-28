@@ -108,12 +108,16 @@ The steps are very similar to my kubelet debug guide
 
 ### Instrument the kind node for debugging through a sidecar (automated one time setup)
 
-- Checkout to the above PR by cloning my fork and build a custom version of `cdebug`
+- Install cdebug
 
-```bash
-# in the cdebug codebase
-make build-dev
-cp cdebug ~/go/bin/
+```
+GOOS=darwin
+GOARCH=arm64
+curl -Ls https://github.com/iximiuz/cdebug/releases/latest/download/cdebug_${GOOS}_${GOARCH}.tar.gz | tar xvz
+sudo mv cdebug /usr/local/bin
+
+cdebug --version
+cdebug version 0.0.17
 ```
 
 - Build the containerd-debug:latest sidecar (the Dockerfile is in this repo)
@@ -126,7 +130,7 @@ make -C ./debug containerd-debug
 - Instrument any `kind-worker` container
 
 ```bash
-cdebug exec --image containerd-debug:latest -it docker://kind-worker '$CDEBUG_WORKSPACE/app/containerd-debug-entrypoint.sh'
+cdebug exec --image containerd-debug:latest -it docker://kind-worker '$CDEBUG_ROOTFS/app/containerd-debug-entrypoint.sh'
 ```
 
 ### Regular workflow

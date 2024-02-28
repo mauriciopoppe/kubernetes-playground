@@ -6,16 +6,16 @@ install() {
   # setup systemd kubelet-debug.service unit
   systemd=/etc/systemd/system
   mkdir -p "${systemd}/kubelet-debug.service.d"
-  cp $CDEBUG_WORKSPACE/app/kubelet-debug.service "${systemd}"
-  cp $CDEBUG_WORKSPACE/app/10-kubeadm.conf "${systemd}/kubelet-debug.service.d/10-kubeadm.conf"
-  cp $CDEBUG_WORKSPACE/app/conf.kubernetes "${systemd}/kubelet-debug.service.d/conf.kubernetes"
+  cp $CDEBUG_ROOTFS/app/kubelet-debug.service "${systemd}"
+  cp $CDEBUG_ROOTFS/app/10-kubeadm.conf "${systemd}/kubelet-debug.service.d/10-kubeadm.conf"
+  cp $CDEBUG_ROOTFS/app/conf.kubernetes "${systemd}/kubelet-debug.service.d/conf.kubernetes"
 
   # copy dlv if not already there
-  cp $CDEBUG_WORKSPACE/app/bin/dlv /usr/bin/dlv
+  cp $CDEBUG_ROOTFS/app/bin/dlv /usr/bin/dlv
 
   # copy tooling (grcat)
-  cp $CDEBUG_WORKSPACE/app/bin/grcat /usr/bin/grcat
-  cp $CDEBUG_WORKSPACE/app/bin/grc /usr/bin/grc
+  cp $CDEBUG_ROOTFS/app/bin/grcat /usr/bin/grcat
+  cp $CDEBUG_ROOTFS/app/bin/grc /usr/bin/grc
 
   if ! command -v python3 &> /dev/null; then
     apt update && apt install -y python3
