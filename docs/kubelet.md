@@ -4,14 +4,15 @@
 
 Requirements:
 
-- Tools, k8s tag
+- kind at the version below, delve, docker, kubernetes codebase checked out at version below.
+  - NOTE: the kind and kubernetes versions must match the ones below
 
 ```bash
 kind --version && dlv version && docker version && (cd $GOPATH/src/k8s.io/kubernetes && git log -1)
 
-kind version 0.22.0
+kind version 0.27.0
 Delve Debugger
-Version: 1.22.0
+Version: 1.23.1
 Build: $Id: 61ecdbbe1b574f0dd7d7bad8b6a5d564cce981e9 $
 Client:
  Cloud integration: v1.0.31
@@ -42,18 +43,22 @@ Server: Docker Desktop 4.18.0 (104112)
  docker-init:
   Version:          0.19.0
   GitCommit:        de40ad0
-commit 4b8e819355d791d96b7e9d9efe4cbafae2311c88 (HEAD, tag: v1.29.2)
+commit 32cc146f75aad04beaaa245a7157eb35063a9f99 (HEAD, tag: v1.32.3)
 Author: Kubernetes Release Robot <k8s-release-robot@users.noreply.github.com>
-Date:   Wed Feb 14 10:32:39 2024 +0000
+Date:   Tue Mar 11 19:52:20 2025 +0000
 
-    Release commit for Kubernetes v1.29.2
+    Release commit for Kubernetes v1.32.3
 ```
 
-- The kind worker node exposes a port used for debugging, this could be done through
-  the config sent to kind (see [/kind-sandbox/config-worker-dlv.yaml](/kind-sandbox/config-worker-dlv.yaml)) or through [cdebug](https://github.com/iximiuz/cdebug)
-  which can forward requests to a running container.
+- A kind cluster with a node with a port exposed for debugging
+  - The kind worker node must expose a port for debugging, this could be done through
+    the config sent to kind (see [/kind-sandbox/config-worker-dlv.yaml](/kind-sandbox/config-worker-dlv.yaml)) or through [cdebug](https://github.com/iximiuz/cdebug)
+    which can forward requests to a running container.
 
 ```
+# if you don't have a kind cluster you can use /kind-sandbox/config-worker-dlv.yaml
+kind create cluster --config=./kind-sandbox/config-worker-dlv.yaml --image=kindest/node:v1.32.3
+
 # NOTE: check that the port 56268 is forwarded from the host to the kind-worker
 docker ps
 CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS                  PORTS                       NAMES
@@ -75,35 +80,6 @@ The steps are:
   - make your editor forward breakpoints to the delve server
   - delve will stop at the breakpoints set 🥳
 
-### Editor (one time setup)
-
-In my editor [Neovim](https://neovim.io/) I set the following [nvim-dap](https://github.com/mfussenegger/nvim-dap) config:
-
-```lua
-  {
-    type = "go",
-    name = "Attach kubelet (remote)",
-    debugAdapter = "dlv-dap",
-    request = "attach",
-    mode = "remote",
-    host = "127.0.0.1",
-    port = "56268",
-    stopOnEntry = false,
-    -- I started the kubelet in kind through delve listening on port 56268
-    -- back in my workstation I connected to it through `dlv connect :56268`
-    -- Inside it I run `sources` and it printed the list of files in the kubelet (showing the full path)
-    -- Based on that I added the following substitutePath rule
-    substitutePath = {
-      {
-          from = "${workspaceFolder}",
-          to = "/go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes",
-      },
-    },
-  },
-```
-
-For more info about this setup please [check my dotfiles](https://github.com/mauriciopoppe/dotfiles/blob/10ca972e5bdeccf374dc4a75bc3236a07b051dcf/neovim/lua/plugins/debugger.lua#L205).
-
 ### Instrument the kubelet for debugging through a sidecar (automated one time setup)
 
 An alternative is to install the tooling needed for debugging through a sidecar
@@ -112,13 +88,12 @@ container, this can be done through [cdebug](https://github.com/iximiuz/cdebug).
 - Install cdebug
 
 ```
-GOOS=darwin
-GOARCH=arm64
-curl -Ls https://github.com/iximiuz/cdebug/releases/latest/download/cdebug_${GOOS}_${GOARCH}.tar.gz | tar xvz
+mkdir -p $GOPATH/src/github.com/iximiuz/
+git clone https://github.com/iximiuz/cdebug $GOPATH/src/github.com/iximiuz/cdebug
+cd $GOPATH/src/github.com/iximiuz/cdebug
+make
 sudo mv cdebug /usr/local/bin
-
 cdebug --version
-cdebug version 0.0.17
 ```
 
 - Build the kubelet-debug:latest sidecar (the Dockerfile is in this repo)
@@ -158,6 +133,20 @@ docker cp debug/kubelet/conf.kubernetes kind-worker:/etc/systemd/system/kubelet-
 
 In the kubernetes codebase, recompile the kubelet and run it in the worker:
 
+#### (option 1) Recompile the kubelet for the same OS/Arch
+
+```bash
+KUBE_VERBOSE=0 KUBE_FASTBUILD=true KUBE_RELEASE_RUN_TESTS=n \
+  make all WHAT=cmd/kubelet DBG=1
+
+# restart kubelet
+# NOTE: the path might need to be updated depending on the platform (amd64, arm64)
+docker cp _output/bin/kubelet kind-worker:/usr/bin/kubelet-debug
+docker exec -i kind-worker bash -c "systemctl daemon-reload; systemctl restart kubelet-debug"
+```
+
+#### (option 2) Recompile the kubelet for a different OS/Arch
+
 ```bash
 # cross compile the kubelet to run in the kind-worker arch
 # see /docs/kubernetes-development.md for the script to compile the kubelet inside a container
@@ -170,6 +159,8 @@ docker cp _output/dockerized/bin/linux/arm64/kubelet kind-worker:/usr/bin/kubele
 docker exec -i kind-worker bash -c "systemctl daemon-reload; systemctl restart kubelet-debug"
 ```
 
+#### Verify that delve is waiting for a connection
+
 In another terminal, exec into the kind-worker container and see the kubelet output
 
 ```bash
@@ -178,6 +169,35 @@ journalctl --since "$(systemctl show -p ActiveEnterTimestamp kubelet-debug | awk
 ```
 
 ![kubelet journalctl logs](https://user-images.githubusercontent.com/1616682/213890085-20e22c5c-7cc5-4daa-bc5c-4e64a3dcf71b.png)
+
+### Editor (one time setup)
+
+In my editor [Neovim](https://neovim.io/) I set the following [nvim-dap](https://github.com/mfussenegger/nvim-dap) config:
+
+```lua
+  {
+    type = "go",
+    name = "Attach kubelet (remote)",
+    debugAdapter = "dlv-dap",
+    request = "attach",
+    mode = "remote",
+    host = "127.0.0.1",
+    port = "56268",
+    stopOnEntry = false,
+    -- I started the kubelet in kind through delve listening on port 56268
+    -- back in my workstation I connected to it through `dlv connect :56268`
+    -- Inside it I run `sources` and it printed the list of files in the kubelet (showing the full path)
+    -- Based on that I added the following substitutePath rule
+    substitutePath = {
+      {
+        from = "${workspaceFolder}",
+        to = "${env:HOME}/go/src/k8s.io/kubernetes"
+      },
+    },
+  },
+```
+
+For more info about this setup please [check my dotfiles](https://github.com/mauriciopoppe/dotfiles/blob/10ca972e5bdeccf374dc4a75bc3236a07b051dcf/neovim/lua/plugins/debugger.lua#L205).
 
 In my nvim editor set breakpoints and connect nvim-dap to the kubelet server, for more info about this
 setup read: [kubernetes development](./kubernetes-development.md)

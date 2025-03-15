@@ -5,7 +5,7 @@ with the kubernetes releases.
 
 ```sh
 # check the latest version at https://kind.sigs.k8s.io/docs/user/quick-start/#installing-with-go-install
-go install sigs.k8s.io/kind@v0.22.0
+go install sigs.k8s.io/kind@v0.27.0
 ```
 
 ## Creating the cluster
@@ -13,7 +13,7 @@ go install sigs.k8s.io/kind@v0.22.0
 Using an existing release https://github.com/kubernetes-sigs/kind/releases
 
 ```bash
-kind create cluster --config=./kind-sandbox/config-worker-dlv.yaml --image=kindest/node:v1.27.3
+kind create cluster --config=./kind-sandbox/config-worker-dlv.yaml --image=kindest/node:v1.32.3
 ```
 
 If there are changes to HEAD, build an image from a kubernetes version first and then create
