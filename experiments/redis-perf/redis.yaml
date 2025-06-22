@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: benchmark
+  labels:
+    app: redis
+data:
+  redis.conf: |
+    io-threads 4
+    io-threads-do-reads yes
+    save ""
+    protected-mode no
+    bind 0.0.0.0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: benchmark
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.0-alpine # Using Redis 7.0 with Alpine Linux for smaller image size
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"] # Command to start Redis with our config file
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-config-volume
+          mountPath: /usr/local/etc/redis/ # Mount path for the config file
+          readOnly: true
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: 4
+          limits:
+            memory: "4Gi"
+            cpu: 4
+      volumes:
+      - name: redis-config-volume
+        configMap:
+          name: redis-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: benchmark
+  labels:
+    app: redis
+spec:
+  selector:
+    app: redis
+  ports:
+  - protocol: TCP
+    port: 6379 # Service port
+    targetPort: 6379 # Container port
+  type: ClusterIP # Exposes the service internally within the cluster
+

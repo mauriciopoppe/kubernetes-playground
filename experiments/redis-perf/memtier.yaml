@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: memtier-benchmark
+  namespace: benchmark
+  labels:
+    app: memtier-benchmark
+spec:
+  template:
+    metadata:
+      labels:
+        app: memtier-benchmark
+    spec:
+      containers:
+      - name: memtier-benchmark
+        # Using a specialized image that includes memtier_benchmark
+        # You might need to build your own image or find one that suits your needs.
+        # redislabs/memtier_benchmark is a common choice.
+        image: redislabs/memtier_benchmark:2.1.4
+        command: ["memtier_benchmark"]
+        args:
+          # Target the Redis service (redis-service) at its cluster IP and port 6379
+          - "-s"
+          - "redis-service" # Use the Kubernetes Service name as the hostname
+          - "-p"
+          - "6379"
+          - "--threads=4" # Number of client threads
+          - "--clients=10" # Number of clients per thread
+          - "--data-size=32" # Size of the data in bytes
+          - "--protocol=redis" # Specify Redis protocol
+          - "--test-time=30" # Run benchmark for 300 seconds
+          - "--ratio=8:2" # Set 80% reads (GET) and 20% writes (SET)
+          - "--hide-histogram" # Hide histogram
+      restartPolicy: Never # Ensures the Job does not restart the pod after it completes successfully or fails
+  backoffLimit: 1 # Number of retries before marking the Job as failed
+
