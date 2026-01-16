@@ -1,6 +1,7 @@
 module.exports = {
   title: 'Kubernetes Playground',
   description: 'Notes and experiments with Kubernetes',
+  base: '/kubernetes-playground/',
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },

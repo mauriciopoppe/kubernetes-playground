@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: Migrate documentation to VitePress
-*Link: [./conductor/tracks/vitepress-docs_20260115/](./conductor/tracks/vitepress-docs_20260115/)*
+## [~] Track: Add github actions to deploy to mauriciopoppe.github.io/kubernetes-playground
+*Link: [./conductor/tracks/gh-pages-deploy_20260115/](./conductor/tracks/gh-pages-deploy_20260115/)*

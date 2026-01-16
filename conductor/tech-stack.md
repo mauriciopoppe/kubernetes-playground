@@ -15,3 +15,6 @@ This project leverages the following technologies to create a robust and reprodu
 ## Infrastructure and Runtime
 - **Kind (Kubernetes in Docker):** The primary tool for spinning up local Kubernetes clusters for testing and development.
 - **Containerd:** The container runtime of choice, with specific configurations included for deep-dive debugging and inspection.
+
+## Documentation
+- **VitePress:** A Vue-based static site generator used to build and serve the project's documentation.
