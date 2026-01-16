@@ -14,7 +14,7 @@ This project acts as a personal playground and knowledge base for Kubernetes. It
 
 ## Key Features
 - **Educational Notes:** detailed documentation on various Kubernetes components (e.g., controllers, kubelet, runtime).
-- **Modern Documentation Site:** A VitePress-powered static site for easy navigation and reading of all notes and experiments.
+- **Modern Documentation Site:** A VitePress-powered static site, automatically deployed to GitHub Pages, for easy navigation and reading of all notes and experiments.
 - **Hello World Examples:** Simple, deployable applications for both Linux and Windows containers to test basic orchestration.
 - **Client-Go Examples:** "Out-of-cluster" examples demonstrating how to interact with the Kubernetes API programmatically.
 - **Debugging Infrastructure:** specialized setups and configurations for debugging core components like `containerd` and `kubelet`.

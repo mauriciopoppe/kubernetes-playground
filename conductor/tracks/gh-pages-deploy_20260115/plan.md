@@ -8,4 +8,4 @@
 ## Phase 2: Verification
 - [x] Task: Verify the build locally with the new `base` path.
 - [x] Task: Push changes to `master` and monitor the GitHub Actions workflow.
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md)

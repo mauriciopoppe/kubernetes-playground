@@ -11,6 +11,7 @@ This project leverages the following technologies to create a robust and reprodu
 - **Skaffold:** Handles the workflow for building, pushing, and deploying applications to Kubernetes clusters.
 - **Docker:** Used for containerizing applications, with support for both Linux and Windows-based container images.
 - **Makefile:** Provides a unified interface for common tasks like building binaries and managing containers.
+- **GitHub Actions:** Automates the CI/CD pipeline, specifically for building and deploying the documentation site.
 
 ## Infrastructure and Runtime
 - **Kind (Kubernetes in Docker):** The primary tool for spinning up local Kubernetes clusters for testing and development.
@@ -18,3 +19,4 @@ This project leverages the following technologies to create a robust and reprodu
 
 ## Documentation
 - **VitePress:** A Vue-based static site generator used to build and serve the project's documentation.
+- **GitHub Pages:** Hosts the public documentation site at `mauriciopoppe.github.io/kubernetes-playground`.
