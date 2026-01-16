@@ -3,7 +3,7 @@
 ## Phase 1: Configuration & Setup
 - [x] Task: Update `docs/.vitepress/config.js` to set `base: '/kubernetes-playground/'`.
 - [x] Task: Create the `.github/workflows/deploy.yml` file with the deployment logic.
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Configuration & Setup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Configuration & Setup' (Protocol in workflow.md) [checkpoint: 320e90f]
 
 ## Phase 2: Verification
 - [ ] Task: Verify the build locally with the new `base` path.
