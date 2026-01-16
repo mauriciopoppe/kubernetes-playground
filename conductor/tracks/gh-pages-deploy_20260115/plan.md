@@ -6,6 +6,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Configuration & Setup' (Protocol in workflow.md) [checkpoint: 320e90f]
 
 ## Phase 2: Verification
-- [ ] Task: Verify the build locally with the new `base` path.
-- [ ] Task: Push changes to `master` and monitor the GitHub Actions workflow.
+- [x] Task: Verify the build locally with the new `base` path.
+- [~] Task: Push changes to `master` and monitor the GitHub Actions workflow.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md)
