@@ -5,7 +5,7 @@
 - [x] Task: Install VitePress as a development dependency.
 - [x] Task: Create the VitePress configuration file at `docs/.vitepress/config.js`.
 - [x] Task: Add VitePress scripts (dev, build, serve) to `package.json`.
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup' (Protocol in workflow.md) [checkpoint: 20b701b]
 
 ## Phase 2: Documentation Migration
 - [ ] Task: Create `docs/index.md` as the landing page for the documentation site.
