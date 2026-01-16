@@ -1,0 +1,30 @@
+{
+  "name": "kubernetes-playground",
+  "version": "1.0.0",
+  "description": "Notes that I learned from contributing to kubernetes",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mauriciopoppe/kubernetes-playground.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mauriciopoppe/kubernetes-playground/issues"
+  },
+  "homepage": "https://github.com/mauriciopoppe/kubernetes-playground#readme",
+  "devDependencies": {
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.26"
+  }
+}

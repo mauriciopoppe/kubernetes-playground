@@ -1,0 +1,1 @@
+import{_ as i,c as a,o as n,ae as e}from"./chunks/framework.CDjunVez.js";const g=JSON.parse('{"title":"Kubelet","description":"","frontmatter":{},"headers":[],"relativePath":"kubelet.md","filePath":"kubelet.md"}'),t={name:"kubelet.md"};function l(h,s,k,p,r,d){return n(),a("div",null,[...s[0]||(s[0]=[e("",31)])])}const o=i(t,[["render",l]]);export{g as __pageData,o as default};
