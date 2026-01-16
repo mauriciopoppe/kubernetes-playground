@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /kubernetes-development
+      link: /sandbox-with-debugger
     - theme: alt
       text: View on GitHub
       link: https://github.com/mauriciopoppe/kubernetes-playground
