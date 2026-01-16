@@ -14,6 +14,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Documentation Migration' (Protocol in workflow.md) [checkpoint: b46070d]
 
 ## Phase 3: Final Integration and Cleanup
-- [ ] Task: Verify the root `README.md` is correctly linked or integrated into the documentation.
-- [ ] Task: Perform a final build and manual walkthrough of all links in the documentation site.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Integration and Cleanup' (Protocol in workflow.md)
+- [x] Task: Verify the root `README.md` is correctly linked or integrated into the documentation.
+- [x] Task: Perform a final build and manual walkthrough of all links in the documentation site.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Integration and Cleanup' (Protocol in workflow.md)

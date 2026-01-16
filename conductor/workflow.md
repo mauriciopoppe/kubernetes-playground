@@ -65,16 +65,14 @@ All tasks follow a strict lifecycle:
     - Stage all changes related to the completed phase.
     - Perform the commit with a clear and concise message (e.g., `feat(phase): Complete Phase X - <Phase Name>`).
 
-6.  **Get and Record Phase Checkpoint SHA:**
-    - **Step 6.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* (`git log -1 --format="%H"`).
-    - **Step 6.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7 characters of the commit hash in the format `[checkpoint: <sha>]`.
-    - **Step 6.3: Write Plan:** Write the updated content back to `plan.md`.
+6.  **Attach Auditable Verification Report using Git Notes:**
+    -   **Step 6.1: Draft Note Content:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
+    -   **Step 6.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
+        ```bash
+        git notes add -m "<verification report>" <commit_hash>
+        ```
 
-7. **Commit Plan Update:**
-    - **Action:** Stage the modified `plan.md` file.
-    - **Action:** Commit this change with a descriptive message following the format `conductor(plan): Mark phase '<PHASE NAME>' as complete`.
-
-8.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created.
+7.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created with the verification report attached.
 
 ### Quality Gates
 
