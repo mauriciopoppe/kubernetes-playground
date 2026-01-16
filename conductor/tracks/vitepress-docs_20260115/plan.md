@@ -8,10 +8,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup' (Protocol in workflow.md) [checkpoint: 20b701b]
 
 ## Phase 2: Documentation Migration
-- [ ] Task: Create `docs/index.md` as the landing page for the documentation site.
-- [ ] Task: Audit and refactor existing Markdown files in `docs/` for VitePress compatibility (checking links and frontmatter).
-- [ ] Task: Configure basic sidebar and navbar in `docs/.vitepress/config.js` to link to existing documents.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Documentation Migration' (Protocol in workflow.md)
+- [x] Task: Create `docs/index.md` as the landing page for the documentation site.
+- [x] Task: Audit and refactor existing Markdown files in `docs/` for VitePress compatibility (checking links and frontmatter).
+- [x] Task: Configure basic sidebar and navbar in `docs/.vitepress/config.js` to link to existing documents.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Documentation Migration' (Protocol in workflow.md) [checkpoint: b46070d]
 
 ## Phase 3: Final Integration and Cleanup
 - [ ] Task: Verify the root `README.md` is correctly linked or integrated into the documentation.
